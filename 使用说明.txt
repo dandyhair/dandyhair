@@ -1,0 +1,86 @@
+全部完成！haircare-finance-server 已整合并启动。
+
+  最终文件结构：
+  haircare-finance-server/
+  ├── app.py              ← Flask 后端（SQLite + Flask-Login + REST API）
+  ├── requirements.txt    ← Python 依赖
+  ├── static/
+  │   ├── css/style.css   ← 样式（复用原版）
+  │   └── js/app.js       ← 前端逻辑（全部改为 fetch 调 API）
+  └── templates/
+      ├── login.html      ← 登录/注册页
+      └── index.html      ← 主界面（完整版）
+
+  已完成的整合：
+  - app.py：DB模型（User/Expense/Income）更规范，序列化方法从猴子补丁改为类内方法
+  - templates/index.html：将 DeepSeek 省略的 tabs+页面+弹窗全部补全，顶部改为 Flask 风格（显示用户名 + 退出登录按钮）
+  - static/js/app.js：全部 localStorage 改为 /api/* 异步调用，DOMContentLoaded 中 init() 自动加载数据
+
+  浏览器已打开 http://127.0.0.1:5000，直接输入用户名和密码就能登录（首次自动注册）。每个人的数据存在 SQLite
+  数据库里，多人协作互不干扰。
+
+
+两个版本的数据存放和迁移情况：
+
+  纯前端版 haircare-finance：
+  - 数据存在浏览器 localStorage 里，不是文件，浏览器之间不互通
+  - 换电脑不能直接用，需要手动"导出全部数据" → 拿 .json 文件 → 新电脑上"导入全部数据"
+
+  Flask后端版 haircare-finance-server：
+  - 数据存在 finance.db 文件里（已生成，20KB），就在项目根目录
+  - 整个文件夹拷贝到其它电脑，数据跟着走
+  - 新电脑上需要：
+    a. 安装 Python 3
+    b. 运行 pip install -r requirements.txt（一次性）
+    c. python app.py 启动
+
+  拷贝整个 haircare-finance-server 文件夹就行，.db 文件在里面，所有用户的账号和数据都在。
+
+
+
+
+
+
+┌────────────────┬────────────────────────────────┐
+  │      设备      │              地址              │
+  ├────────────────┼────────────────────────────────┤
+  │ 电脑桌面版     │ http://127.0.0.1:5050/         │
+  ├────────────────┼────────────────────────────────┤
+  │ 电脑移动版测试 │ http://127.0.0.1:5050/mobile   │
+  ├────────────────┼────────────────────────────────┤
+  │ 手机           │ http://192.168.3.5:5050/mobile │
+  └────────────────┴────────────────────────────────┘
+
+  防火墙还需要放行 5050 端口。请以管理员身份打开 PowerShell 运行：
+
+  netsh advfirewall firewall add rule name="Flask 5050" dir=in action=allow protocol=tcp localport=5050
+
+  另外确认网络是"专用"模式：设置 → 网络和 Internet → WLAN → 点击 HUAWEI-H24 → 改成 专用网络。
+
+  然后手机就能打开了。
+
+教程已写好。整个项目文件夹现在可以直接复制给任何人使用。
+
+  发给别人只需要这 5 样东西
+
+  haircare-finance-server/
+  ├── app.py
+  ├── requirements.txt
+  ├── 部署教程_如福财务系统.txt    ← 刚写的完整教程
+  ├── templates/   (3个HTML)
+  └── static/      (3个JS)
+
+  新电脑部署就 3 步
+
+  pip install -r requirements.txt    # 装依赖
+  python app.py                       # 启动
+  # 然后按教程配一下防火墙 + 网络改专用
+
+  教程里覆盖了完整排查
+
+  手机/iPad 连不上的 11 种情况都列在第六章，按顺序逐项排查就行。核心问题你已经踩过一遍了：端口被占 +
+  防火墙拦截，教程里这两条排在前面。
+
+  ---
+  顺便说一句，finance.db 现在是空库，你之前导入过数据的那个库可以保留。如果要发给别人，把空的 finance.db
+  删掉，系统第一次启动会自动创建新库。
