@@ -5,3 +5,4 @@ Werkzeug==3.0.0
 gunicorn
 openpyxl
 xlrd
+gunicorn
